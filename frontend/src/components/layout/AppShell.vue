@@ -717,6 +717,15 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside))
   padding: 24px;
 }
 
+.page-content:has(.survey-editor-page) {
+  padding: 12px 16px;
+  overflow: hidden;
+  height: calc(100vh - var(--topbar-height));
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
 /* ─── Dropdown transition ─────────────────────────────────────── */
 .dropdown-enter-active,
 .dropdown-leave-active {

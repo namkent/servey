@@ -253,7 +253,10 @@ async function save() {
 .survey-editor-page {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
 }
 
 /* ─── Topbar ─────────────────────────────────────────────── */
@@ -262,13 +265,15 @@ async function save() {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  flex-wrap: wrap;
+  flex-shrink: 0;
+  margin-bottom: 0;
 }
 
 .topbar-left {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
+  min-width: 0;
 }
 
 .back-link {
@@ -280,6 +285,7 @@ async function save() {
   text-decoration: none;
   font-weight: 500;
   transition: color 150ms ease-out;
+  flex-shrink: 0;
 }
 
 .back-link:hover {
@@ -287,27 +293,31 @@ async function save() {
 }
 
 .editor-title {
-  font-size: 1.375rem;
+  font-size: 1.125rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .topbar-actions {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-shrink: 0;
 }
 
 .topbar-error {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
+  padding: 4px 10px;
   background: var(--color-danger-bg);
   color: var(--color-danger);
   border-radius: var(--radius-md);
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   font-weight: 500;
 }
 
@@ -334,19 +344,23 @@ async function save() {
 /* ─── Side-by-Side Layout ────────────────────────────────── */
 .editor-layout {
   display: flex;
-  gap: 16px;
-  align-items: flex-start;
+  gap: 14px;
+  align-items: stretch;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 @media (max-width: 1024px) {
   .editor-layout {
     flex-direction: column;
+    overflow-y: auto;
   }
 }
 
 /* ─── Left Sidebar ───────────────────────────────────────── */
 .editor-sidebar {
-  width: 360px;
+  width: 340px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -354,24 +368,27 @@ async function save() {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-border);
-  max-height: calc(100vh - 120px);
-  overflow-y: auto;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
 }
 
 @media (max-width: 1024px) {
   .editor-sidebar {
     width: 100%;
     max-height: none;
+    height: auto;
   }
 }
 
 .sidebar-header {
-  padding: 16px 20px;
+  padding: 10px 16px;
   border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
 }
 
 .sidebar-title {
-  font-size: 1rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   color: var(--color-text);
 }
@@ -379,21 +396,24 @@ async function save() {
 .sidebar-sub {
   font-size: 0.75rem;
   color: var(--color-text-muted);
-  margin-top: 2px;
+  margin-top: 1px;
 }
 
 .sidebar-body {
-  padding: 20px;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .sidebar-footer {
-  padding: 16px 20px;
+  padding: 10px 16px;
   border-top: 1px solid var(--color-border);
   background: var(--color-surface-2);
+  flex-shrink: 0;
 }
 
 /* ─── Form Inputs ────────────────────────────────────────── */
@@ -491,11 +511,17 @@ async function save() {
 .editor-main {
   flex: 1;
   min-width: 0;
+  height: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .creator-wrapper {
-  height: calc(100vh - 120px);
-  min-height: 600px;
+  height: 100%;
+  min-height: 0;
+  flex: 1;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
