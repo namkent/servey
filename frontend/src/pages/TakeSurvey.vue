@@ -3,15 +3,15 @@
     <!-- Loading -->
     <div v-if="loading" class="loading-state">
       <div class="spinner" />
-      <p>Đang tải khảo sát…</p>
+      <p>{{ t('takeSurvey.loading') }}</p>
     </div>
 
     <!-- Error -->
     <div v-else-if="error" class="error-state animate-in">
       <AlertCircleIcon :size="40" />
-      <h2>Không thể tải khảo sát</h2>
+      <h2>{{ t('takeSurvey.errorTitle') }}</h2>
       <p>{{ error }}</p>
-      <RouterLink to="/survey" class="back-link">← Quay về trang chủ</RouterLink>
+      <RouterLink to="/survey" class="back-link">{{ t('takeSurvey.backHome') }}</RouterLink>
     </div>
 
     <!-- Completed banner -->
@@ -19,14 +19,14 @@
       <div class="completed-icon">
         <CheckCircleIcon :size="48" />
       </div>
-      <h2>Bạn đã hoàn thành khảo sát này!</h2>
-      <p>Cảm ơn bạn đã tham gia "<strong>{{ survey?.title }}</strong>".</p>
-      <p class="completed-date">Nộp lúc: {{ formatDateTime(myResponse?.response?.submitted_at) }}</p>
+      <h2>{{ t('takeSurvey.completedTitle') }}</h2>
+      <p>{{ t('takeSurvey.completedSub', { title: survey?.title }) }}</p>
+      <p class="completed-date">{{ t('takeSurvey.submittedAt', { time: formatDateTime24(myResponse?.response?.submitted_at) }) }}</p>
       <div class="completed-actions">
         <button class="btn btn--outline" @click="viewReadOnly">
-          <EyeIcon :size="16" /> Xem lại câu trả lời đã gửi
+          <EyeIcon :size="16" /> {{ t('takeSurvey.reviewAnswers') }}
         </button>
-        <RouterLink to="/survey" class="back-link">← Quay về trang chủ</RouterLink>
+        <RouterLink to="/survey" class="back-link">{{ t('takeSurvey.backHome') }}</RouterLink>
       </div>
     </div>
 
@@ -39,7 +39,7 @@
             {{ t('common.back') }}
           </RouterLink>
           <span v-if="showReadOnly" class="readonly-badge">
-            <LockIcon :size="14" /> Complete Survey
+            <LockIcon :size="14" /> {{ t('takeSurvey.completedBadge') }}
           </span>
         </div>
         <div class="survey-info">
@@ -59,16 +59,16 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AlertCircleIcon, CheckCircleIcon, ArrowLeftIcon, EyeIcon, LockIcon } from 'lucide-vue-next'
 import { Model } from 'survey-core'
 import { SurveyComponent } from 'survey-vue3-ui'
 import { useSurveyStore } from '@/stores/surveys.js'
-import { formatDateTime, debounce } from '@/lib/utils.js'
+import { formatDateTime24, debounce } from '@/lib/utils.js'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const route = useRoute()
 const surveyStore = useSurveyStore()
 
@@ -80,6 +80,13 @@ const error = ref(null)
 const showReadOnly = ref(false)
 
 const isCompleted = computed(() => myResponse.value?.response?.is_complete === true)
+
+// Update survey locale if user switches language in topbar
+watch(locale, (newLoc) => {
+  if (surveyModel.value) {
+    surveyModel.value.locale = newLoc
+  }
+})
 
 async function init() {
   loading.value = true
@@ -93,7 +100,7 @@ async function init() {
     ])
 
     if (!surveyData) {
-      error.value = 'Không tìm thấy khảo sát này.'
+      error.value = t('takeSurvey.notFound')
       return
     }
 
@@ -104,7 +111,7 @@ async function init() {
       buildSurveyModel(surveyData, responseData)
     }
   } catch (err) {
-    error.value = err.message || 'Đã có lỗi xảy ra.'
+    error.value = err.message || t('takeSurvey.defaultError')
   } finally {
     loading.value = false
   }
@@ -114,7 +121,7 @@ function viewReadOnly() {
   showReadOnly.value = true
   const model = new Model(survey.value.schema)
   model.showTitle = false
-  model.locale = 'vi'
+  model.locale = locale.value || 'vi'
   if (myResponse.value?.response?.response) {
     model.data = myResponse.value.response.response
   }
@@ -125,7 +132,7 @@ function viewReadOnly() {
 function buildSurveyModel(surveyData, responseData) {
   const model = new Model(surveyData.schema)
   model.showTitle = false
-  model.locale = 'vi'
+  model.locale = locale.value || 'vi'
 
   // Restore draft if exists
   if (responseData?.response?.response && Object.keys(responseData.response.response).length > 0) {
