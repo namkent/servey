@@ -22,6 +22,10 @@ const require = createRequire(import.meta.url)
 const app = express()
 const PORT = process.env.PORT || 3000
 
+// ─── Trust Proxy (Nginx) ─────────────────────────────────────────────────────
+// Cho phép Express nhận đúng IP, host và protocol khi chạy sau Nginx reverse proxy
+app.set('trust proxy', 1)
+
 // ─── Security ────────────────────────────────────────────────────────────────
 app.use(helmet({
   contentSecurityPolicy: false, // Relax for dev; tighten in prod
@@ -56,10 +60,12 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
+    // Chỉ bật secure nếu có HTTPS (COOKIE_SECURE=true). Mặc định false để hỗ trợ HTTP nội bộ
+    secure: process.env.COOKIE_SECURE === 'true',
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000, // 1 day
-    sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+    // sameSite: 'lax' để trình duyệt gửi cookie khi IDP OIDC callback về qua redirect GET
+    sameSite: 'lax',
   },
 }))
 

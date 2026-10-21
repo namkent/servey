@@ -9,7 +9,7 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
-  base: '/',
+  base: process.env.VITE_BASE || '/',
   server: {
     port: 5173,
     proxy: {
