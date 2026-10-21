@@ -137,6 +137,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ArrowLeftIcon, AlertCircleIcon, SaveIcon } from 'lucide-vue-next'
 import { SurveyCreatorModel } from 'survey-creator-core'
 import { SurveyCreatorComponent } from 'survey-creator-vue'
@@ -147,6 +148,7 @@ import { getCreatorOptions } from '@/lib/surveyTheme.js'
 import CustomSelect from '@/components/ui/CustomSelect.vue'
 import api from '@/lib/axios.js'
 
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const surveyStore = useSurveyStore()
@@ -220,7 +222,7 @@ onMounted(async () => {
 async function save() {
   saveError.value = ''
   if (!form.value.title.trim()) {
-    saveError.value = 'Tên khảo sát là bắt buộc.'
+    saveError.value = t('surveys.validationTitle')
     return
   }
 
@@ -240,7 +242,7 @@ async function save() {
     })
     router.push('/survey/admin/surveys')
   } catch (err) {
-    saveError.value = err.response?.data?.error || err.message || 'Lưu thất bại.'
+    saveError.value = err.response?.data?.error || err.message || t('common.saveError')
   } finally {
     saving.value = false
   }

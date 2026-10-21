@@ -16,6 +16,5 @@ export function getCreatorOptions() {
     isAutoSave: false,
     showSaveButton: false,
     showSidebar: true,
-    haveCommercialLicense: true,
   }
 }
