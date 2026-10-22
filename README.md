@@ -31,7 +31,7 @@ Hệ thống quản lý, thiết kế và thu thập ý kiến khảo sát nội
   - Node.js + Express
   - Passport.js (Google OIDC & WSO2 / SDV SSO)
   - Session Store: SQLite (`connect-sqlite3`), cookie xác thực
-  - Database: SQLite (`better-sqlite3`), migrate và seed dữ liệu tự động
+  - Database: SQLite (`node:sqlite` tích hợp sẵn trong Node.js), migrate và seed dữ liệu tự động
 
 ---
 

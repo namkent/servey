@@ -72,7 +72,7 @@ export const DepartmentModel = {
       // Delete from departments table
       db.prepare('DELETE FROM departments WHERE name = ?').run(trimmed)
       // Fallback any surveys in this department to 'Chung'
-      db.prepare('UPDATE surveys SET department = "Chung" WHERE department = ?').run(trimmed)
+      db.prepare("UPDATE surveys SET department = 'Chung' WHERE department = ?").run(trimmed)
 
       // Remove from users' assigned departments
       const users = db.prepare('SELECT id, department, departments FROM users').all()

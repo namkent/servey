@@ -1,5 +1,5 @@
-import Database from 'better-sqlite3'
-import { readFileSync } from 'fs'
+import { DatabaseSync } from 'node:sqlite'
+import { readFileSync, mkdirSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 
@@ -10,9 +10,38 @@ let db = null
 export function getDb() {
   if (!db) {
     const dbPath = process.env.DB_PATH || './data/survey.db'
-    db = new Database(dbPath, { verbose: process.env.NODE_ENV === 'development' ? null : null })
-    db.pragma('journal_mode = WAL')
-    db.pragma('foreign_keys = ON')
+    if (dbPath !== ':memory:') {
+      mkdirSync(dirname(dbPath), { recursive: true })
+    }
+
+    db = new DatabaseSync(dbPath)
+
+    // Helper compatibility methods
+    if (!db.pragma) {
+      db.pragma = function (sql) {
+        const query = sql.trim().toUpperCase().startsWith('PRAGMA') ? sql : `PRAGMA ${sql}`
+        return db.exec(query)
+      }
+    }
+
+    if (!db.transaction) {
+      db.transaction = function (fn) {
+        return function (...args) {
+          db.exec('BEGIN')
+          try {
+            const result = fn.apply(this, args)
+            db.exec('COMMIT')
+            return result
+          } catch (err) {
+            db.exec('ROLLBACK')
+            throw err
+          }
+        }
+      }
+    }
+
+    db.exec('PRAGMA journal_mode = WAL;')
+    db.exec('PRAGMA foreign_keys = ON;')
     initSchema()
   }
   return db
